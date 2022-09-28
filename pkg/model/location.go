@@ -11,7 +11,9 @@ type Location struct {
 	Longitude float64
 }
 
+// Scan decodes a custom type by the database driver
 func (g *Location) Scan(src interface{}) error {
+	// https://antonibertel.medium.com/golang-scanning-mysql-mariadb-geographical-point-type-2c425c4f8bc
 	switch b := src.(type) {
 	case []byte:
 		if len(b) != 25 {

@@ -29,7 +29,11 @@ func main() {
 		log.Fatalf("Failed to open database: %v", dbOpenErr)
 		return
 	}
-	defer db.Close()
+	defer func(db *sql.DB) {
+		if closeErr := db.Close(); closeErr != nil {
+			log.Printf("Failed to close database connection: %v", closeErr)
+		}
+	}(db)
 
 	authRepository := repository.NewAuth(db)
 	userRepository := repository.NewUser(db)
@@ -62,7 +66,7 @@ func main() {
 	}()
 
 	// Block until a shutdown signal received (CTRL+C)
-	signal.Notify(c, os.Interrupt)
+	signal.Notify(c, os.Interrupt, os.Kill)
 	<-c
 
 	// Shut down within context deadline (will shutdown immediately if no active connections)

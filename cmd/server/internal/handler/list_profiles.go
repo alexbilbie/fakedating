@@ -1,13 +1,13 @@
 package handler
 
 import (
-	"encoding/json"
 	"errors"
 	"net/http"
 	"strconv"
 
 	"fakedating/pkg/middleware"
 	"fakedating/pkg/model"
+	"fakedating/pkg/payload"
 	"fakedating/pkg/util"
 )
 
@@ -15,6 +15,7 @@ func (h Handler) ListProfiles(w http.ResponseWriter, r *http.Request) {
 	searchParams, validateErr := getSearchParametersFromRequest(r)
 	if validateErr != nil {
 		util.WriteErrorResponse("Invalid search parameters", validateErr, http.StatusBadRequest, w)
+		return
 	}
 
 	// Fetch profiles
@@ -27,20 +28,13 @@ func (h Handler) ListProfiles(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	encodedUsers, marshalErr := json.Marshal(
-		struct {
-			Matches []model.User
-		}{
+	util.WriteJSONResponse(
+		payload.ListProfilesResponse{
 			Matches: matches,
 		},
+		http.StatusOK,
+		w,
 	)
-	if marshalErr != nil {
-		util.WriteErrorResponse("Failed to marshal users to JSON", marshalErr, http.StatusInternalServerError, w)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	_, _ = w.Write(encodedUsers)
 }
 
 func getSearchParametersFromRequest(r *http.Request) ([]model.SearchParameterOpt, error) {
@@ -98,6 +92,13 @@ func getSearchParametersFromRequest(r *http.Request) ([]model.SearchParameterOpt
 		searchParams = append(
 			searchParams, model.SearchWithAgeConstraint(uint(ageLowerVal), uint(ageUpperVal)),
 		)
+	}
+
+	// Offset
+	offset, offsetOk := queryStringParams["offset"]
+	if offsetOk {
+		offsetVal, _ := strconv.ParseInt(offset[0], 10, 0)
+		searchParams = append(searchParams, model.SearchWithOffset(uint(offsetVal)))
 	}
 
 	return searchParams, nil

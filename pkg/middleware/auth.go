@@ -54,7 +54,8 @@ func AuthenticateRequest(repo AuthRepository, next http.Handler) http.Handler {
 			// Lookup user in database
 			userID, lookupErr := repo.GetUserIDByToken(authHeader)
 			if lookupErr != nil {
-				// TODO
+				util.WriteErrorResponse("Invalid authorization token", nil, http.StatusUnauthorized, w)
+				return
 			}
 
 			// Update the request context with the user ID for use later on

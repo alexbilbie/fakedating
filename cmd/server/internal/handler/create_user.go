@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"math/rand"
@@ -9,6 +8,7 @@ import (
 	"strings"
 
 	"fakedating/pkg/model"
+	"fakedating/pkg/payload"
 	"fakedating/pkg/util"
 	"github.com/go-faker/faker/v4"
 	"golang.org/x/crypto/bcrypt"
@@ -32,20 +32,14 @@ func (h Handler) CreateUser(w http.ResponseWriter, _ *http.Request) {
 	}
 	log.Printf("Created user %q", persistedUser.ID)
 
-	encodedUser, marshalErr := json.Marshal(
-		userWithOneTimePasswordReveal{
+	util.WriteJSONResponse(
+		payload.CreateUserResponse{
 			User:     persistedUser,
 			Password: password,
 		},
+		http.StatusCreated,
+		w,
 	)
-	if marshalErr != nil {
-		util.WriteErrorResponse("Failed to marshal user to JSON", marshalErr, http.StatusInternalServerError, w)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	_, _ = w.Write(encodedUser)
 }
 
 func generateUser() model.User {
@@ -85,9 +79,4 @@ func generateRandomPassword() string {
 		b.WriteRune(chars[rand.Intn(len(chars))])
 	}
 	return b.String()
-}
-
-type userWithOneTimePasswordReveal struct {
-	model.User
-	Password string
 }

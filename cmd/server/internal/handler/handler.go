@@ -10,9 +10,10 @@ import (
 
 type UserRepository interface {
 	Create(model.User) (model.User, error)
+	GetByID(ksuid.KSUID) (model.User, error)
 	GetByEmail(email string) (model.User, error)
 	ListMatches(userID ksuid.KSUID, options ...model.SearchParameterOpt) ([]model.User, error)
-	Swipe(swiperID ksuid.KSUID, recipient ksuid.KSUID, match bool) (model.ProfileMatch, error)
+	SaveSwipe(swiperID ksuid.KSUID, recipient ksuid.KSUID, matched bool) (model.ProfileMatch, error)
 }
 
 type AuthRepository interface {
