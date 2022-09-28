@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"fakedating/pkg/model"
@@ -30,8 +31,8 @@ func (repo User) Create(user model.User) (model.User, error) {
 		user.PasswordHash,
 		user.Gender,
 		user.Age,
-		user.LocationLatitude,
-		user.LocationLongitude,
+		user.Location.Longitude, // MariaDB stores location as longitude first in POINT type
+		user.Location.Latitude,
 	)
 	if err != nil {
 		return model.User{}, fmt.Errorf("failed to persist new user: %w", err)
@@ -41,8 +42,26 @@ func (repo User) Create(user model.User) (model.User, error) {
 }
 
 func (repo User) GetByEmail(email string) (model.User, error) {
-	// TODO implement me
-	panic("implement me")
+	var user model.User
+	var gender string
+
+	err := repo.db.
+		QueryRow("SELECT id, email, full_name, password_hash, gender, age, location FROM users WHERE email = ?", email).
+		Scan(&user.ID, &user.Email, &user.Name, &user.PasswordHash, &gender, &user.Age, &user.Location)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return model.User{}, errors.New("unknown user")
+		}
+		return model.User{}, fmt.Errorf("failed to lookup user: %w", err)
+	}
+
+	if gender == "female" {
+		user.Gender = model.GenderFemale
+	} else {
+		user.Gender = model.GenderMale
+	}
+
+	return user, nil
 }
 
 func (repo User) ListMatches(userID ksuid.KSUID, options ...model.SearchParameterOpt) ([]model.User, error) {

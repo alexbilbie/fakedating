@@ -13,12 +13,11 @@ const (
 )
 
 type User struct {
-	ID                ksuid.KSUID
-	Email             string
-	PasswordHash      string `json:"-"`
-	Name              string
-	Gender            Gender
-	Age               uint
-	LocationLatitude  float64 `json:",omitempty"`
-	LocationLongitude float64 `json:",omitempty"`
+	ID           ksuid.KSUID
+	Email        string
+	PasswordHash string `json:"-"`
+	Name         string
+	Gender       Gender
+	Age          uint
+	Location     Location
 }

@@ -43,6 +43,7 @@ func (h Handler) CreateUser(w http.ResponseWriter, _ *http.Request) {
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	_, _ = w.Write(encodedUser)
 }
@@ -58,11 +59,21 @@ func generateUser() model.User {
 
 	name = fmt.Sprintf("%s %s", name, faker.LastName())
 
+	// Generate a fake location within London
+	latMin := 51.416639
+	latMax := 51.627694
+	lat := latMin + rand.Float64()*(latMax-latMin)
+
+	longMin := -0.367440
+	longMax := 0.062400
+	long := longMin + rand.Float64()*(longMax-longMin)
+
 	return model.User{
-		Email:  faker.Email(),
-		Name:   name,
-		Gender: gender,
-		Age:    uint(18 + rand.Intn(50)),
+		Email:    strings.ToLower(faker.Email()),
+		Name:     name,
+		Gender:   gender,
+		Age:      uint(18 + rand.Intn(50)),
+		Location: model.Location{Latitude: lat, Longitude: long},
 	}
 }
 
