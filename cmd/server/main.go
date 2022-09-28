@@ -65,7 +65,7 @@ func main() {
 
 	// Block until a shutdown signal received (CTRL+C)
 	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, os.Kill)
+	signal.Notify(c, os.Interrupt)
 	<-c
 
 	// Shut down within context deadline (will shutdown immediately if no active connections)
