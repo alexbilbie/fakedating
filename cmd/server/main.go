@@ -56,16 +56,15 @@ func main() {
 	}
 
 	// Run our server in a goroutine so that it doesn't block listening for shutdown
-	c := make(chan os.Signal, 1)
 	go func() {
 		log.Println("HTTP Server starting")
 		if err := srv.ListenAndServe(); err != nil {
-			log.Printf("HTTP server failed: %v", err)
-			os.Exit(1)
+			log.Printf("HTTP server stopped: %v", err)
 		}
 	}()
 
 	// Block until a shutdown signal received (CTRL+C)
+	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, os.Kill)
 	<-c
 
@@ -74,6 +73,6 @@ func main() {
 	defer cancel()
 	_ = srv.Shutdown(ctx)
 
-	log.Println("HTTP Server shutdown")
+	log.Println("HTTP server shutdown")
 	os.Exit(0)
 }
