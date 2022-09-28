@@ -2,11 +2,11 @@
 
 ## Setup instructions
 
-0. Git clone this repo - `git clone git@github.com:alexbilbie/fakedating.git`
-0. `cd` into the cloned repository
-0. Run `go mod download` to download the Go dependencies
-0. Run `docker-compose up`
-0. Connect to the MariaDB database in an SQL client and run the SQL in `setup.sql`
+1. Git clone this repo - `git clone git@github.com:alexbilbie/fakedating.git`
+2. `cd` into the cloned repository
+3. Run `go mod download` to download the Go dependencies
+4. Run `docker-compose up`
+5. Connect to the MariaDB database in an SQL client and run the SQL in `setup.sql`
 
 Database credentials:
 * Host: `127.0.0.1`
@@ -16,7 +16,15 @@ Database credentials:
 
 ## Run the server
 
-0. Running `go run cmd/server/main.go` will start the HTTP server on port `8000`
+1. Running `go run cmd/server/main.go` will start the HTTP server on port `8000`
+
+## Run tests
+
+1. Run `go test ./...` from the root - requires Docker to be running
+
+* `pkg/middleware/auth_test.go` is an example of testing an HTTP endpoint
+* `pkg/repository/user_test.go` is an example of testing a database using a Docker container
+* `pkg/util/*_test.go` shows simple unit tests
 
 ## API
 
@@ -148,11 +156,3 @@ Content-Type: application/json
     "MutualMatch": false
 }
 ```
-
-## Run tests
-
-0. Run `go test ./...`
-
-* `pkg/middleware/auth_test.go` is an example of testing an HTTP endpoint
-* `pkg/repository/user_test.go` is an example of testing a database using a Docker container
-* `pkg/util/*_test.go` shows simple unit tests
