@@ -7,5 +7,6 @@ services:
     restart: always
     environment:
       MARIADB_ROOT_PASSWORD: example
+      MARIADB_DATABASE: fakedating
     ports:
       - "3306:3306"

@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"io"
+	"log"
 	"net/http"
 
 	"fakedating/pkg/middleware"
@@ -22,13 +23,14 @@ func (h Handler) Swipe(w http.ResponseWriter, r *http.Request) {
 
 	var swipePayload payload.SwipeRequest
 	if unmarshallErr := json.Unmarshal(body, &swipePayload); unmarshallErr != nil {
-		util.WriteErrorResponse("Failed to decode the request body", readErr, http.StatusBadRequest, w)
+		util.WriteErrorResponse("Failed to decode the request body", unmarshallErr, http.StatusBadRequest, w)
 		return
 	}
 
 	// Validate recipient ID exists
 	_, getRecipientErr := h.userRepository.GetByID(swipePayload.Recipient)
 	if getRecipientErr != nil {
+		log.Printf("Failed to lookup recipient user: %v", getRecipientErr)
 		util.WriteErrorResponse("Failed to lookup recipient user", getRecipientErr, http.StatusInternalServerError, w)
 		return
 	}
@@ -40,6 +42,7 @@ func (h Handler) Swipe(w http.ResponseWriter, r *http.Request) {
 		swipePayload.Matched,
 	)
 	if saveErr != nil {
+		log.Printf("Failed to save swipe: %v", saveErr)
 		util.WriteErrorResponse("Failed to save swipe", saveErr, http.StatusInternalServerError, w)
 		return
 	}

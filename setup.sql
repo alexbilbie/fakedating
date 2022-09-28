@@ -1,7 +1,3 @@
-DROP DATABASE IF EXISTS fakedating;
-CREATE DATABASE fakedating CHARSET 'utf8';
-USE fakedating;
-
 CREATE TABLE users (
     id            CHAR(27)     NOT NULL PRIMARY KEY,
     email         VARCHAR(100) NOT NULL,
@@ -27,5 +23,5 @@ CREATE TABLE swipes (
     matched      BOOL DEFAULT FALSE,
     CONSTRAINT foreign_swiper_id FOREIGN KEY (swiper_id) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT foreign_recipient_id FOREIGN KEY (recipient_id) REFERENCES users(id) ON DELETE CASCADE,
-    UNIQUE INDEX swiper_recipient_unique ON swipes (swiper_id, recipient_id);
+    UNIQUE INDEX swiper_recipient_unique (swiper_id, recipient_id)
 );

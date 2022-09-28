@@ -2,6 +2,7 @@ package handler
 
 import (
 	"errors"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -24,6 +25,7 @@ func (h Handler) ListProfiles(w http.ResponseWriter, r *http.Request) {
 		searchParams...,
 	)
 	if listErr != nil {
+		log.Printf("Failed to list matches: %v", listErr)
 		util.WriteErrorResponse("Failed to list matches", listErr, http.StatusInternalServerError, w)
 		return
 	}

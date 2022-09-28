@@ -96,7 +96,7 @@ func (repo User) GetByEmail(email string) (model.User, error) {
 func (repo User) ListMatches(userID ksuid.KSUID, options ...model.SearchParameterOpt) ([]model.User, error) {
 	queryParts := []string{
 		"SELECT id, email, full_name, gender, age, location FROM users WHERE id <> ?",
-		"AND id NOT IN (SELECT recipient_id FROM swipes WHERE swiper_id <> ?)",
+		"AND id NOT IN (SELECT recipient_id FROM swipes WHERE swiper_id = ?)",
 	}
 	queryParams := []any{userID, userID}
 
@@ -128,6 +128,9 @@ func (repo User) ListMatches(userID ksuid.KSUID, options ...model.SearchParamete
 		queryParts = append(queryParts, "OFFSET ?")
 		queryParams = append(queryParams, searchParams.Offset)
 	}
+
+	fmt.Println(strings.Join(queryParts, " "))
+	fmt.Println(queryParams)
 
 	rows, queryErr := repo.db.Query(strings.Join(queryParts, " "), queryParams...)
 	if queryErr != nil {

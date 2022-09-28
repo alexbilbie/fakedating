@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"io"
+	"log"
 	"net/http"
 	"net/mail"
 
@@ -62,6 +63,7 @@ func (h Handler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Return token + user
+	log.Printf("User %q logged in successfully", user.ID)
 	util.WriteJSONResponse(
 		payload.LoginResponse{
 			User:  user,

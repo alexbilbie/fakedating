@@ -20,6 +20,7 @@ func (h Handler) CreateUser(w http.ResponseWriter, _ *http.Request) {
 
 	hashedPassword, hashErr := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if hashErr != nil {
+		log.Printf("Failed to hash password: %v", hashErr)
 		util.WriteErrorResponse("Failed to hash password", hashErr, http.StatusInternalServerError, w)
 		return
 	}
@@ -27,6 +28,7 @@ func (h Handler) CreateUser(w http.ResponseWriter, _ *http.Request) {
 
 	persistedUser, createErr := h.userRepository.Create(user)
 	if createErr != nil {
+		log.Printf("Failed to persist new user: %v", createErr)
 		util.WriteErrorResponse("Failed to persist new user", createErr, http.StatusInternalServerError, w)
 		return
 	}
