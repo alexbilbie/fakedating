@@ -108,6 +108,7 @@ Available query parameters:
 * `radius` (uint) - KM radius - default 1
 * `age_lower` (uint) - lower age bound - min 18
 * `age_upper` (uint) - upper age bound - max 99
+* `offet` (uint) - pagination offset
 
 Response:
 
